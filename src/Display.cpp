@@ -53,18 +53,27 @@ void Display::BigramTop(const BigramCounter& bc, std::size_t top_n) {
 }
 
 void Display::BigramMatrix(const BigramCounter& bc) {
-    std::print("    ");
-    for (std::size_t b = 0; b < ALPHABET_SIZE; ++b) {
-        std::printf("%5s", (b == 0) ? "SPC" : idx_to_str(b).c_str());
-    }
+    std::size_t max_val = 0;
+    for (std::size_t a = 0; a < ALPHABET_SIZE; ++a)
+        for (std::size_t b = 0; b < ALPHABET_SIZE; ++b)
+            max_val = std::max(max_val, bc.Get(a, b));
+
+    int width = 1;
+    std::size_t tmp = max_val;
+    while (tmp >= 10) { tmp /= 10; ++width; }
+    width += 1;
+
+    std::printf("%*s", width, "");
+    for (std::size_t b = 0; b < ALPHABET_SIZE; ++b)
+        std::printf("%*s", width, (b == 0) ? "SPC" : idx_to_str(b).c_str());
     std::println();
 
     for (std::size_t a = 0; a < ALPHABET_SIZE; ++a) {
-        std::printf("%4s", (a == 0) ? "SPC" : idx_to_str(a).c_str());
+        std::printf("%*s", width, (a == 0) ? "SPC" : idx_to_str(a).c_str());
         for (std::size_t b = 0; b < ALPHABET_SIZE; ++b) {
             std::size_t cnt = bc.Get(a, b);
-            if (cnt == 0) std::print(" . ");
-            else std::printf("%5zu", cnt);
+            if (cnt == 0) std::printf("%*s", width, ".");
+            else std::printf("%*zu", width, cnt);
         }
         std::println();
     }
